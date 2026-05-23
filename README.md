@@ -7,10 +7,11 @@ energeticas.
 
 ## Estado actual
 
-Este repositorio esta en fase de bootstrap. La prioridad no es construir todo el
-monorepo de una vez, sino dejar una base pequena, verificable y facil de ampliar.
+Este repositorio esta en fase de twin core. La prioridad no es construir todo el
+monorepo de una vez, sino dejar un nucleo fisico pequeno, verificable y facil de
+ampliar.
 
-Foco recomendado del Sprint 1:
+Foco recomendado del Sprint 2:
 
 ```text
 packages/pv-twin/   Nucleo academico del gemelo digital
@@ -74,6 +75,8 @@ GET /health
 GET /api/v1/twin/panels
 GET /api/v1/twin/panels/{panel_id}
 POST /api/v1/twin/cell-temperature
+GET /api/v1/twin/panels/{panel_id}/iv
+GET /api/v1/twin/panels/{panel_id}/pv
 ```
 
 Ejemplo de calculo fisico:
@@ -82,6 +85,12 @@ Ejemplo de calculo fisico:
 curl -X POST http://127.0.0.1:8000/api/v1/twin/cell-temperature \
   -H "Content-Type: application/json" \
   -d '{"g_poa_w_m2":1000.0,"t_amb_c":25.0,"noct_c":45.0}'
+```
+
+Ejemplo de curva I-V:
+
+```bash
+curl "http://127.0.0.1:8000/api/v1/twin/panels/generic_poly_330/iv?g_poa_w_m2=1000&t_cell_c=25&n_points=50"
 ```
 
 ## GitHub Copilot CLI

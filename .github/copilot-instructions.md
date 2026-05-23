@@ -17,7 +17,7 @@ Zona horaria del dominio: `America/Bogota`
 
 ## Prioridad actual
 
-Fase activa: Sprint 1 - Twin core.
+Fase activa: Sprint 2 - SDM minimo y curvas I-V/P-V.
 
 Copilot debe priorizar:
 
@@ -28,6 +28,7 @@ Copilot debe priorizar:
 - `tests/unit/`
 
 No crear frontend, mobile, Kubernetes ni modulos grandes sin una tarea explicita.
+El foco actual es implementar y validar el Single Diode Model con pvlib.
 
 ## Reglas de codigo
 

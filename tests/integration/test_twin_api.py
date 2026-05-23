@@ -58,3 +58,51 @@ def test_calculate_cell_temperature_rejects_invalid_payload() -> None:
     )
 
     assert response.status_code == 422
+
+
+def test_get_panel_iv_curve() -> None:
+    response = client.get(
+        "/api/v1/twin/panels/generic_poly_330/iv",
+        params={"g_poa_w_m2": 1000.0, "t_cell_c": 25.0, "n_points": 25},
+    )
+
+    assert response.status_code == 200
+    curve = response.json()
+    assert curve["panel_id"] == "generic_poly_330"
+    assert abs(curve["p_mpp_w"] - 330.0) / 330.0 <= 0.05
+    assert curve["v_oc_v"] > curve["v_mpp_v"]
+    assert curve["i_sc_a"] > curve["i_mpp_a"]
+    assert len(curve["points"]) == 25
+    assert {"v_v", "i_a", "p_w"} <= set(curve["points"][0])
+
+
+def test_get_panel_pv_curve() -> None:
+    response = client.get(
+        "/api/v1/twin/panels/generic_poly_330/pv",
+        params={"g_poa_w_m2": 1000.0, "t_cell_c": 25.0, "n_points": 25},
+    )
+
+    assert response.status_code == 200
+    curve = response.json()
+    assert curve["panel_id"] == "generic_poly_330"
+    assert len(curve["points"]) == 25
+    assert {"v_v", "p_w"} <= set(curve["points"][0])
+    assert "i_a" not in curve["points"][0]
+
+
+def test_get_panel_iv_curve_returns_404_for_missing_panel() -> None:
+    response = client.get(
+        "/api/v1/twin/panels/missing_panel/iv",
+        params={"g_poa_w_m2": 1000.0, "t_cell_c": 25.0},
+    )
+
+    assert response.status_code == 404
+
+
+def test_get_panel_iv_curve_rejects_invalid_query() -> None:
+    response = client.get(
+        "/api/v1/twin/panels/generic_poly_330/iv",
+        params={"g_poa_w_m2": 9.0, "t_cell_c": 25.0},
+    )
+
+    assert response.status_code == 422
