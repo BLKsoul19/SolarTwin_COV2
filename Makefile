@@ -1,7 +1,7 @@
 .PHONY: test lint fmt type-check clean
 
 test:
-	pytest tests/unit/ -v --cov=packages --cov-report=term-missing
+	pytest tests/unit tests/integration -v --cov=packages --cov=apps --cov-report=term-missing
 
 lint:
 	ruff check . && ruff format --check .

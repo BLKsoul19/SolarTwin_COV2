@@ -72,6 +72,16 @@ Endpoints iniciales:
 ```text
 GET /health
 GET /api/v1/twin/panels
+GET /api/v1/twin/panels/{panel_id}
+POST /api/v1/twin/cell-temperature
+```
+
+Ejemplo de calculo fisico:
+
+```bash
+curl -X POST http://127.0.0.1:8000/api/v1/twin/cell-temperature \
+  -H "Content-Type: application/json" \
+  -d '{"g_poa_w_m2":1000.0,"t_amb_c":25.0,"noct_c":45.0}'
 ```
 
 ## GitHub Copilot CLI
