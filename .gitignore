@@ -216,3 +216,7 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# SolarTwin local artifacts
+.uv-cache/
+packages/*/src/*.egg-info/

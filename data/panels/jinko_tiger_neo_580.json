@@ -1,0 +1,15 @@
+{
+  "panel_id": "jinko_tiger_neo_580",
+  "pmax_stc_w": 580.0,
+  "voc_stc_v": 52.0,
+  "isc_stc_a": 14.3,
+  "vmpp_stc_v": 43.5,
+  "impp_stc_a": 13.34,
+  "gamma_pmax_per_c": -0.0029,
+  "beta_voc_per_c": -0.0027,
+  "alpha_isc_per_c": 0.0005,
+  "noct_c": 43.0,
+  "cells_in_series": 144,
+  "technology": "TOPCon",
+  "tier": 1
+}
