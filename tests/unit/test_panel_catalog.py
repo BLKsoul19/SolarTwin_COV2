@@ -9,9 +9,11 @@ def test_panel_catalog_loads_all_panels() -> None:
 
     panels = catalog.list_all()
 
-    assert len(panels) >= 2
+    assert len(panels) == 7
     assert all(isinstance(panel, PanelParameters) for panel in panels)
     assert [panel.panel_id for panel in panels] == sorted(panel.panel_id for panel in panels)
+    assert all(panel.manufacturer for panel in panels)
+    assert all(panel.model for panel in panels)
 
 
 def test_panel_catalog_get_by_id() -> None:

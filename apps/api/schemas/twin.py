@@ -1,3 +1,5 @@
+from typing import Literal
+
 from pydantic import BaseModel, Field
 
 
@@ -13,6 +15,23 @@ class CellTemperatureResponse(CellTemperatureRequest):
     """Response payload for the cell temperature endpoint."""
 
     t_cell_c: float = Field(..., description="Cell temperature [C]")
+
+
+class CellTemperatureFaimanRequest(BaseModel):
+    """Request payload for the Faiman temperature endpoint."""
+
+    g_poa_w_m2: float = Field(..., ge=0, description="Plane-of-array irradiance [W/m2]")
+    t_amb_c: float = Field(..., description="Ambient temperature [C]")
+    wind_speed_m_s: float = Field(..., ge=0, description="Wind speed [m/s]")
+    u0: float = Field(25.0, description="Faiman constant heat loss coefficient [W/m2/C]")
+    u1: float = Field(6.84, description="Faiman convective heat loss coefficient [W/m3/C/s]")
+
+
+class CellTemperatureFaimanResponse(CellTemperatureFaimanRequest):
+    """Response payload for the Faiman temperature endpoint."""
+
+    t_cell_c: float = Field(..., description="Cell temperature [C]")
+    model: Literal["faiman"] = "faiman"
 
 
 class IVCurvePointResponse(BaseModel):
