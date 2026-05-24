@@ -37,6 +37,7 @@ where = ["packages/pv-twin/src"]
 testpaths = ["tests"]
 markers = ["integration: requiere docker compose up -d"]
 asyncio_mode = "auto"
+pythonpath = [".", "packages/pv-twin/src"]
 
 [tool.ruff]
 target-version = "py311"
