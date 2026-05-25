@@ -7,11 +7,11 @@ energeticas.
 
 ## Estado actual
 
-Este repositorio esta en fase de twin core. La prioridad no es construir todo el
-monorepo de una vez, sino dejar un nucleo fisico pequeno, verificable y facil de
-ampliar.
+Este repositorio esta en fase de consolidacion del twin core. La prioridad no es
+construir todo el monorepo de una vez, sino dejar un nucleo fisico pequeno,
+verificable y facil de ampliar antes de dashboard, clima o regulacion.
 
-Foco recomendado del Sprint 2:
+Foco recomendado del Sprint 3:
 
 ```text
 packages/pv-twin/   Nucleo academico del gemelo digital
@@ -75,6 +75,7 @@ GET /health
 GET /api/v1/twin/panels
 GET /api/v1/twin/panels/{panel_id}
 POST /api/v1/twin/cell-temperature
+POST /api/v1/twin/cell-temperature/faiman
 GET /api/v1/twin/panels/{panel_id}/iv
 GET /api/v1/twin/panels/{panel_id}/pv
 ```
@@ -85,6 +86,14 @@ Ejemplo de calculo fisico:
 curl -X POST http://127.0.0.1:8000/api/v1/twin/cell-temperature \
   -H "Content-Type: application/json" \
   -d '{"g_poa_w_m2":1000.0,"t_amb_c":25.0,"noct_c":45.0}'
+```
+
+Ejemplo Faiman con viento:
+
+```bash
+curl -X POST http://127.0.0.1:8000/api/v1/twin/cell-temperature/faiman \
+  -H "Content-Type: application/json" \
+  -d '{"g_poa_w_m2":900.0,"t_amb_c":28.0,"wind_speed_m_s":2.0}'
 ```
 
 Ejemplo de curva I-V:

@@ -1,5 +1,9 @@
 {
   "panel_id": "generic_poly_330",
+  "manufacturer": "Generic",
+  "model": "330W polycrystalline reference module",
+  "datasheet_url": null,
+  "datasheet_version": "SolarTwin reference fixture",
   "pmax_stc_w": 330.0,
   "voc_stc_v": 45.6,
   "isc_stc_a": 9.2,

@@ -7,6 +7,10 @@ class PanelParameters(BaseModel):
     """Parametros STC de un modulo FV del catalogo SolarTwin CO."""
 
     panel_id: str
+    manufacturer: str | None = None
+    model: str | None = None
+    datasheet_url: str | None = None
+    datasheet_version: str | None = None
     pmax_stc_w: float = Field(..., gt=0, description="Potencia maxima STC [W]")
     voc_stc_v: float = Field(..., gt=0, description="Tension Voc STC [V]")
     isc_stc_a: float = Field(..., gt=0, description="Corriente Isc STC [A]")

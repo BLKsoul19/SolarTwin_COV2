@@ -1,0 +1,19 @@
+{
+  "panel_id": "risen_rsm144_550",
+  "manufacturer": "Risen Energy",
+  "model": "RSM144-9-550M",
+  "datasheet_url": "https://en.risen.com/uploads/20250110/Risen_TDS%20for%20p-type%20Single%20Glass%20Modules-20250109.pdf",
+  "datasheet_version": "p-type Single Glass Modules 2025-01-09",
+  "pmax_stc_w": 550.0,
+  "voc_stc_v": 49.8,
+  "isc_stc_a": 13.94,
+  "vmpp_stc_v": 42.2,
+  "impp_stc_a": 13.04,
+  "gamma_pmax_per_c": -0.0035,
+  "beta_voc_per_c": -0.00275,
+  "alpha_isc_per_c": 0.00045,
+  "noct_c": 44.0,
+  "cells_in_series": 144,
+  "technology": "PERC",
+  "tier": 1
+}

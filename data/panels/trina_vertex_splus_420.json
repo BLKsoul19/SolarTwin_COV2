@@ -1,0 +1,19 @@
+{
+  "panel_id": "trina_vertex_splus_420",
+  "manufacturer": "Trina Solar",
+  "model": "Vertex S+ TSM-420NEG9.28",
+  "datasheet_url": "https://static.trinasolar.com/sites/default/files/Datasheet_Vertex_S%2B_NEG9.28_EN_2022_PA3.pdf",
+  "datasheet_version": "NEG9.28 400-425W",
+  "pmax_stc_w": 420.0,
+  "voc_stc_v": 43.1,
+  "isc_stc_a": 12.33,
+  "vmpp_stc_v": 36.3,
+  "impp_stc_a": 11.57,
+  "gamma_pmax_per_c": -0.003,
+  "beta_voc_per_c": -0.0025,
+  "alpha_isc_per_c": 0.0004,
+  "noct_c": 43.0,
+  "cells_in_series": 108,
+  "technology": "TOPCon",
+  "tier": 1
+}
