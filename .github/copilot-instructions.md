@@ -30,60 +30,88 @@ Copilot debe priorizar:
 No crear frontend, mobile, Kubernetes ni modulos grandes sin una tarea explicita.
 El foco actual es implementar y validar el Single Diode Model con pvlib.
 
-## Reglas de codigo
+---
 
-- Usar type hints completos en Python.
-- Usar docstrings estilo Google en funciones publicas.
-- Usar Pydantic v2 para modelos de datos.
-- Toda variable fisica debe incluir unidad en el nombre:
-  - `g_poa_w_m2`
-  - `t_cell_c`
-  - `v_mpp_v`
-  - `i_mpp_a`
-  - `p_dc_w`
-  - `e_ac_kwh`
-- Series temporales siempre timezone-aware con `America/Bogota`.
-- Nunca alimentar GHI directo al gemelo; transformar GHI a POA antes del SDM.
-- Aplicar mascara diurna antes de invocar el Single Diode Model.
-- No hardcodear tarifas; cargarlas desde `data/tarifas/`.
+## Build, test & lint (comandos clave)
 
-## Capas
-
-```text
-packages/pv-twin/   Nucleo independiente. No importa desde apps/.
-packages/ems/       Puede importar desde pv-twin cuando exista.
-apps/api/           Puede importar desde packages/.
-```
-
-## Comandos esperados
+Requisitos: Python 3.11+, crea entorno virtual y instala dependencias de desarrollo:
 
 ```bash
-pytest
-ruff check .
-ruff format .
-mypy packages/pv-twin/src/pv_twin apps
-uvicorn apps.api.main:app --reload --host 127.0.0.1 --port 8000
+python -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+pip install -e ".[dev]"
 ```
 
-## Catalogo inicial de paneles
+Comandos comunes:
 
-IDs canonicos:
+- Ejecutar toda la suite de tests: pytest
+- Ejecutar un archivo de tests: pytest tests/unit/test_single_diode.py
+- Ejecutar una prueba concreta (nodeid): pytest tests/unit/test_single_diode.py::test_solar_panel_twin_calculates_stc_iv_curve
+- Ejecutar tests por palabra clave: pytest -k "get_cell_temperature"
+- Ejecutar tests con cobertura (usar plugin pytest-cov): pytest --cov=packages/pv-twin --cov-fail-under=85
+- Lint y formato: ruff check . && ruff format .
+- Type checking: mypy packages/pv-twin/src/pv_twin apps
+- Levantar la API local: uvicorn apps.api.main:app --reload --host 127.0.0.1 --port 8000
 
-- `jinko_tiger_neo_580`
-- `longi_himo_x6_580`
-- `canadian_hiku7_600`
-- `trina_vertex_splus_420`
-- `ja_solar_jam72d40_570`
-- `risen_rsm144_550`
-- `generic_poly_330`
+NOTA: las pruebas marcadas como `integration` requieren infra externa (ver pytest markers).
 
-## Definiciones KPI
+---
 
-- PR = `(E_AC / P_STC) / (H_POA / G_ref)`
-- CUF = `E_AC / (P_STC * horas)`
-- Yield especifico = `E_AC / P_STC`
+## High-level architecture
 
-## Antipatrones
+- Monorepo minimal: apps/ (API), packages/ (paquetes reutilizables), data/ (catalogos), tests/.
+- packages/pv-twin: nucleo del gemelo. Contiene:
+  - pv_twin/models: Pydantic v2 data models (PanelParameters, catalog repo)
+  - pv_twin/simulator: implementaciones fisicas (single diode model, temperatura)
+  - pv_twin/kpi: funciones de KPI (PR, CUF, yield)
+- apps/api: pequeño servicio FastAPI que expone endpoints para calculos y catalogos.
+- data/panels: catalogo versionado de parametros STC (JSON). data/tarifas contiene tarifas.
+- Dependencias fisicas importantes: pvlib (IV calculations) y NREL-PySAM para ajuste CEC (fit_cec_sam).
+- Tests: tests/unit (unitarios, rapidos), tests/integration (requieren servicios/infra).
+- Packaging: pyproject.toml declara packages/pv-twin bajo packages/pv-twin/src.
+- CI: .github/workflows contains pipeline (ejecuta pytest, ruff, mypy, coverage).
+
+---
+
+## Repository-specific conventions
+
+- Todas las variables fisicas incluyen su unidad en el nombre: `g_poa_w_m2`, `t_cell_c`, `p_dc_w`, etc.
+- Series temporales siempre timezone-aware (tz: America/Bogota).
+- Nunca pasar GHI directamente al SDM: transformar GHI->POA antes de cualquier calculo del gemelo.
+- Aplicar mascara diurna (daylight mask) antes de invocar el Single Diode Model o calcular KPI.
+- Pydantic v2 para modelos; las validaciones y field_validators deben usarse en modelos de catalogo.
+- Evitar imports desde apps/api hacia packages/pv-twin (packages son independientes).
+- Tests deben validar propiedades numericas y relaciones fisicas (ej. p_mpp cerca de Pmax STC), no solo non-None.
+- Cuando un metodo usa fit_cec_sam, documentar la dependencia opcional NREL-PySAM (puede fallar en entornos sin ella).
+- Mantener line-length ≤ 100 y seguir ruff/mypy settings en pyproject.toml.
+- Coverage mínimo: 85% (configurado en pyproject.toml).
+
+---
+
+## How Copilot should prioritize context
+
+- Prioridad para asistencias: primero abrir `packages/pv-twin/src/pv_twin/simulator/`, luego `models/`, luego `kpi/`, y finalmente `tests/unit/`.
+- Para cambios que afectan la API, revisar `apps/api/` pero no introducir dependencias desde apps hacia packages.
+- No proponer frontend, infra o módulos grandes sin una issue/consenso previo.
+
+---
+
+## Referencias extra (extractos importantes)
+
+- pyproject.toml: ruff target py311, mypy strict=true, pytest testpaths=tests, coverage fail_under=85.
+- README.md contiene ejemplos de uso de la API y comandos de desarrollo local.
+
+---
+
+## Cambios recomendados / notas para mantener
+
+- Mantener este archivo sincronizado con README.md y pyproject.toml.
+- Actualizar la lista de paneles canonicos cuando se agreguen nuevos JSON en data/panels.
+
+---
+
+## Antipatrones (recordatorio)
 
 - Variables `G`, `T`, `P`, `E` sin unidades.
 - `pd.date_range(...)` sin `tz`.
