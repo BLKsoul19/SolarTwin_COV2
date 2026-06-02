@@ -3,6 +3,7 @@ from __future__ import annotations
 import io
 import json
 from datetime import datetime
+from typing import Any
 
 import pandas as pd
 import plotly.graph_objects as go
@@ -16,6 +17,110 @@ from apps.dashboard.api_client import (
 )
 from apps.dashboard.charts import _fig_layout, build_iv_fig, build_pv_fig
 from apps.dashboard.config import COLORS, DEFAULT_COLOR, PANEL_COLORS
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# FUNCIONES DE EXPORTACIÓN
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+def export_iv_curve_to_csv(
+    v_v: list[float],
+    i_a: list[float],
+    p_w: list[float],
+    panel_id: str,
+    g_poa: float,
+    t_cell: float,
+) -> bytes:
+    """Exportar curva I-V a CSV."""
+    df = pd.DataFrame({
+        "Voltaje_V": v_v,
+        "Corriente_A": i_a,
+        "Potencia_W": p_w,
+    })
+    
+    # Agregar metadatos como comentarios
+    metadata = f"""# Curva I-V - Simulación SolarTwin CO
+# Panel: {panel_id}
+# Irradiancia: {g_poa} W/m²
+# Temperatura: {t_cell}°C
+# Fecha: {datetime.now().isoformat()}
+
+"""
+    
+    csv_buffer = io.StringIO()
+    csv_buffer.write(metadata)
+    df.to_csv(csv_buffer, index=False, float_format="%.4f")
+    return csv_buffer.getvalue().encode("utf-8")
+
+
+def export_pv_curve_to_csv(
+    v_v: list[float],
+    p_w: list[float],
+    panel_id: str,
+    g_poa: float,
+    t_cell: float,
+) -> bytes:
+    """Exportar curva P-V a CSV."""
+    df = pd.DataFrame({
+        "Voltaje_V": v_v,
+        "Potencia_W": p_w,
+    })
+    
+    metadata = f"""# Curva P-V - Simulación SolarTwin CO
+# Panel: {panel_id}
+# Irradiancia: {g_poa} W/m²
+# Temperatura: {t_cell}°C
+# Fecha: {datetime.now().isoformat()}
+
+"""
+    
+    csv_buffer = io.StringIO()
+    csv_buffer.write(metadata)
+    df.to_csv(csv_buffer, index=False, float_format="%.4f")
+    return csv_buffer.getvalue().encode("utf-8")
+
+
+def export_simulation_summary_to_json(
+    panel_id: str,
+    g_poa: float,
+    t_cell: float,
+    p_mpp: float,
+    v_mpp: float,
+    i_mpp: float,
+    v_oc: float,
+    i_sc: float,
+    ff: float,
+    efficiency: float,
+    panel_data: dict[str, Any],
+) -> bytes:
+    """Exportar resumen de simulación a JSON."""
+    summary = {
+        "metadata": {
+            "software": "SolarTwin CO v2.0",
+            "timestamp": datetime.now().isoformat(),
+        },
+        "panel": {
+            "panel_id": panel_id,
+            "technology": panel_data.get("technology"),
+            "pmax_stc_w": panel_data.get("pmax_stc_w"),
+            "noct_c": panel_data.get("noct_c"),
+        },
+        "simulation_conditions": {
+            "g_poa_w_m2": g_poa,
+            "t_cell_c": t_cell,
+        },
+        "results": {
+            "p_mpp_w": round(p_mpp, 2),
+            "v_mpp_v": round(v_mpp, 3),
+            "i_mpp_a": round(i_mpp, 4),
+            "v_oc_v": round(v_oc, 3),
+            "i_sc_a": round(i_sc, 4),
+            "fill_factor_pct": round(ff * 100, 2),
+            "efficiency_pct": round(efficiency, 2),
+        },
+    }
+    return json.dumps(summary, indent=2).encode("utf-8")
 
 
 def render_simulator() -> None:
@@ -173,8 +278,41 @@ def render_simulator() -> None:
                 i_mpp=i_mpp_val,
             )
             st.plotly_chart(fig_iv, use_container_width=True)
-        else:
-            st.warning("Sin datos de curva I-V")
+            
+            # ── Botones de descarga I-V ──
+            col_d1, col_d2, col_d3 = st.columns(3)
+            with col_d1:
+                csv_iv = export_iv_curve_to_csv(v_iv, i_iv, iv_data.get("p_w", []),
+                                                 selected_panel, g_poa, t_cell)
+                st.download_button(
+                    label="📥 I-V.csv",
+                    data=csv_iv,
+                    file_name=f"{selected_panel}_iv_{g_poa}W_{t_cell}C.csv",
+                    mime="text/csv",
+                    use_container_width=True,
+                )
+            with col_d2:
+                st.download_button(
+                    label="📸 I-V.png",
+                    data=fig_iv.to_image(format="png"),
+                    file_name=f"{selected_panel}_iv_{g_poa}W_{t_cell}C.png",
+                    mime="image/png",
+                    use_container_width=True,
+                )
+            with col_d3:
+                summary_json = export_simulation_summary_to_json(
+                    selected_panel, g_poa, t_cell,
+                    p_mpp_val or 0, v_mpp_val or 0, i_mpp_val or 0,
+                    v_oc_val or 0, i_sc_val or 0, ff_calc or 0, efficiency_calc or 0,
+                    panel_data
+                )
+                st.download_button(
+                    label="📋 Resumen.json",
+                    data=summary_json,
+                    file_name=f"{selected_panel}_sim_{g_poa}W_{t_cell}C.json",
+                    mime="application/json",
+                    use_container_width=True,
+                )
 
     with col_pv:
         st.markdown(
@@ -190,8 +328,27 @@ def render_simulator() -> None:
                 p_mpp=p_mpp_val,
             )
             st.plotly_chart(fig_pv, use_container_width=True)
-        else:
-            st.warning("Sin datos de curva P-V")
+            
+            # ── Botones de descarga P-V ──
+            col_d4, col_d5 = st.columns(2)
+            with col_d4:
+                csv_pv = export_pv_curve_to_csv(v_pv, p_pv,
+                                                selected_panel, g_poa, t_cell)
+                st.download_button(
+                    label="📥 P-V.csv",
+                    data=csv_pv,
+                    file_name=f"{selected_panel}_pv_{g_poa}W_{t_cell}C.csv",
+                    mime="text/csv",
+                    use_container_width=True,
+                )
+            with col_d5:
+                st.download_button(
+                    label="📸 P-V.png",
+                    data=fig_pv.to_image(format="png"),
+                    file_name=f"{selected_panel}_pv_{g_poa}W_{t_cell}C.png",
+                    mime="image/png",
+                    use_container_width=True,
+                )
 
     # ── Tabla de parámetros físicos — MEJORADA ──
     st.markdown("---")

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+from typing import Any
 
 import pandas as pd
 import plotly.graph_objects as go
@@ -75,13 +76,49 @@ def render_general() -> None:
     elif not panels:
         st.warning("Catálogo vacío. Agrega archivos JSON a data/panels/")
     else:
+        # ── BÚSQUEDA Y FILTRADO MEJORADOS ──
+        col_search, col_filters = st.columns([2, 3])
+        
+        with col_search:
+            search_term = st.text_input(
+                "🔍 Buscar panel por nombre",
+                placeholder="ej: jinko, tiger, neo...",
+                key="panel_search"
+            ).lower()
+        
+        with col_filters:
+            tech_options = sorted(set(p.get("technology", "Unknown") for p in panels))
+            selected_techs = st.multiselect(
+                "🔬 Filtrar por tecnología",
+                tech_options,
+                default=[],
+                key="panel_tech_filter"
+            )
+        
+        # Aplicar filtros
+        filtered_panels = panels
+        
+        if search_term:
+            filtered_panels = [
+                p for p in filtered_panels
+                if search_term in p.get("panel_id", "").lower()
+            ]
+        
+        if selected_techs:
+            filtered_panels = [
+                p for p in filtered_panels
+                if p.get("technology") in selected_techs
+            ]
+        
+        st.caption(f"📌 Mostrando {len(filtered_panels)} de {len(panels)} paneles")
+        
         # ── TAB 1: Vista tabla ──
         tab_table, tab_tech, tab_metrics = st.tabs(["📊 Tabla", "🔬 Análisis tecnológico", "📈 Comparativa KPIs"])
     
         with tab_table:
             # Preparar DataFrame
             panel_data_rows = []
-            for p in sorted(panels, key=lambda x: (-x.get("tier", 9), x.get("panel_id", ""))):
+            for p in sorted(filtered_panels, key=lambda x: (-x.get("tier", 9), x.get("panel_id", ""))):
                 panel_data_rows.append({
                     "Panel ID": p.get("panel_id", "—"),
                     "P_max STC (W)": p.get("pmax_stc_w", 0),
@@ -110,8 +147,8 @@ def render_general() -> None:
     
         with tab_tech:
             # Análisis por tecnología
-            tech_groups = {}
-            for p in panels:
+            tech_groups: dict[str, list[Any]] = {}
+            for p in filtered_panels:
                 tech = p.get("technology", "Unknown")
                 if tech not in tech_groups:
                     tech_groups[tech] = []
