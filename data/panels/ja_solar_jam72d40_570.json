@@ -1,0 +1,19 @@
+{
+  "panel_id": "ja_solar_jam72d40_570",
+  "manufacturer": "JA Solar",
+  "model": "JAM72D40-570",
+  "datasheet_url": "https://www.jasolar.com/uploadfile/fujian/2025/0619/166d74ae1d8290c.pdf",
+  "datasheet_version": "JAM72D40 series",
+  "pmax_stc_w": 570.0,
+  "voc_stc_v": 51.52,
+  "isc_stc_a": 13.74,
+  "vmpp_stc_v": 43.62,
+  "impp_stc_a": 13.07,
+  "gamma_pmax_per_c": -0.0029,
+  "beta_voc_per_c": -0.0025,
+  "alpha_isc_per_c": 0.00045,
+  "noct_c": 45.0,
+  "cells_in_series": 144,
+  "technology": "TOPCon",
+  "tier": 1
+}

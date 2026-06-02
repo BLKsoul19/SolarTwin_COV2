@@ -1,0 +1,19 @@
+{
+  "panel_id": "canadian_hiku7_600",
+  "manufacturer": "Canadian Solar",
+  "model": "HiKu7 CS7L-600MS-R",
+  "datasheet_url": "https://static.csisolar.com/wp-content/uploads/2020/10/27110054/CS-Datasheet-HiKu7_CS7L-MS-R_v2.41_EN.pdf",
+  "datasheet_version": "v2.41 EN",
+  "pmax_stc_w": 600.0,
+  "voc_stc_v": 41.3,
+  "isc_stc_a": 18.47,
+  "vmpp_stc_v": 34.9,
+  "impp_stc_a": 17.2,
+  "gamma_pmax_per_c": -0.0034,
+  "beta_voc_per_c": -0.0026,
+  "alpha_isc_per_c": 0.0005,
+  "noct_c": 41.0,
+  "cells_in_series": 120,
+  "technology": "PERC",
+  "tier": 1
+}

@@ -2,9 +2,16 @@ from typing import Annotated
 
 from fastapi import APIRouter, HTTPException, Query
 from pv_twin.models import PanelCatalogRepository, PanelNotFoundError, PanelParameters
-from pv_twin.simulator import IVCurveResult, SolarPanelTwin, get_cell_temperature
+from pv_twin.simulator import (
+    IVCurveResult,
+    SolarPanelTwin,
+    get_cell_temperature,
+    get_cell_temperature_faiman,
+)
 
 from apps.api.schemas.twin import (
+    CellTemperatureFaimanRequest,
+    CellTemperatureFaimanResponse,
     CellTemperatureRequest,
     CellTemperatureResponse,
     IVCurvePointResponse,
@@ -44,6 +51,27 @@ def calculate_cell_temperature(request: CellTemperatureRequest) -> CellTemperatu
         g_poa_w_m2=request.g_poa_w_m2,
         t_amb_c=request.t_amb_c,
         noct_c=request.noct_c,
+        t_cell_c=t_cell_c,
+    )
+
+
+@router.post("/cell-temperature/faiman", response_model=CellTemperatureFaimanResponse)
+def calculate_cell_temperature_faiman(
+    request: CellTemperatureFaimanRequest,
+) -> CellTemperatureFaimanResponse:
+    t_cell_c = get_cell_temperature_faiman(
+        g_poa_w_m2=request.g_poa_w_m2,
+        t_amb_c=request.t_amb_c,
+        wind_speed_m_s=request.wind_speed_m_s,
+        u0=request.u0,
+        u1=request.u1,
+    )
+    return CellTemperatureFaimanResponse(
+        g_poa_w_m2=request.g_poa_w_m2,
+        t_amb_c=request.t_amb_c,
+        wind_speed_m_s=request.wind_speed_m_s,
+        u0=request.u0,
+        u1=request.u1,
         t_cell_c=t_cell_c,
     )
 

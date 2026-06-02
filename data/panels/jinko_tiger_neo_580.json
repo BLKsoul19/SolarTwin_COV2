@@ -1,5 +1,9 @@
 {
   "panel_id": "jinko_tiger_neo_580",
+  "manufacturer": "JinkoSolar",
+  "model": "Tiger Neo N-type 580W",
+  "datasheet_url": null,
+  "datasheet_version": "SolarTwin reference fixture",
   "pmax_stc_w": 580.0,
   "voc_stc_v": 52.0,
   "isc_stc_a": 14.3,

@@ -1,0 +1,19 @@
+{
+  "panel_id": "longi_himo_x6_580",
+  "manufacturer": "LONGi",
+  "model": "Hi-MO X6 Explorer LR5-72HTH-580M",
+  "datasheet_url": "https://static.longi.com/Hi_MO_6_Explorer_LR_5_72_HTH_560_580_M_35_35_and_15_UT_V17_ES_7b5f7d6dd4.pdf",
+  "datasheet_version": "LR5-72HTH 560-580M",
+  "pmax_stc_w": 580.0,
+  "voc_stc_v": 52.21,
+  "isc_stc_a": 14.2,
+  "vmpp_stc_v": 44.06,
+  "impp_stc_a": 13.17,
+  "gamma_pmax_per_c": -0.0029,
+  "beta_voc_per_c": -0.0023,
+  "alpha_isc_per_c": 0.0005,
+  "noct_c": 45.0,
+  "cells_in_series": 144,
+  "technology": "HPBC",
+  "tier": 1
+}
