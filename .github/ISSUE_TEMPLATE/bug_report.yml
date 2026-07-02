@@ -1,0 +1,28 @@
+name: Reporte de bug
+about: Reporta un problema para ayudarnos a mejorar SolarTwin CO
+title: '[Bug] '
+labels: ['bug']
+body:
+  - type: markdown
+    attributes:
+      value: Gracias por reportar un problema.
+  - type: textarea
+    id: description
+    attributes:
+      label: Descripción del problema
+      description: Explica qué pasó y qué esperabas.
+      placeholder: Describe el bug aquí.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Pasos para reproducir
+      placeholder: 1. Ejecutar...
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Entorno
+      placeholder: Python, versión, OS, etc.

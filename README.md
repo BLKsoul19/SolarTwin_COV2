@@ -1,86 +1,78 @@
-# SolarTwin CO V2
+# SolarTwin CO
 
-Diseno e implementacion de una plataforma digital de monitoreo para sistemas
-fotovoltaicos distribuidos en Colombia, con gemelo digital de paneles
-comerciales, adaptada a edificios inteligentes y escalable a comunidades
-energeticas.
+SolarTwin CO es una plataforma open-source para modelado, simulación y análisis de desempeño de sistemas fotovoltaicos, orientada al mercado colombiano y a la evolución hacia gemelos digitales, dashboards operativos y toma de decisiones basada en datos.
+
+Este repositorio concentra el núcleo físico del proyecto: modelado de paneles solares, curvas I-V/P-V, temperatura de celda, catalogación de módulos y exposición de servicios a través de una API y un dashboard.
+
+[![CI](https://github.com/BLKsoul19/SolarTwin_COV2/actions/workflows/ci.yml/badge.svg)](https://github.com/BLKsoul19/SolarTwin_COV2/actions/workflows/ci.yml)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue)](https://www.python.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+
+## ¿Qué busca el proyecto?
+
+SolarTwin CO combina ingeniería solar, simulación física y software para apoyar:
+
+- selección técnica de paneles solares
+- análisis de rendimiento bajo condiciones reales
+- evaluación térmica y de irradiancia
+- comparación entre módulos comerciales
+- escalabilidad hacia dashboards y analítica energética
 
 ## Estado actual
 
-Este repositorio esta en fase de consolidacion del twin core. La prioridad no es
-construir todo el monorepo de una vez, sino dejar un nucleo fisico pequeno,
-verificable y facil de ampliar antes de dashboard, clima o regulacion.
+El repositorio se encuentra en una fase de consolidación del núcleo físico del gemelo digital. La prioridad actual es estabilizar el modelo de simulación, validar resultados con datos físicos y preparar una base sólida para futuras capas de API, visualización y análisis.
 
-Foco recomendado del Sprint 3:
+## Capacidades actuales
 
-```text
-packages/pv-twin/   Nucleo academico del gemelo digital
-tests/unit/         Pruebas fisicas y de validacion
-data/panels/        Catalogo versionado de paneles
-apps/api/           API minima para exponer el nucleo
-.github/            Instrucciones de Copilot y CI
-```
+- Catálogo versionado de paneles en formato JSON
+- Implementación del modelo de un diodo simple (SDM)
+- Cálculo de temperatura de celda con modelos térmicos
+- Generación de curvas I-V y P-V
+- API mínima para exponer resultados al dashboard
+- Dashboard interactivo para exploración básica del sistema
 
-## Estructura
+## Estructura del repositorio
 
 ```text
-.github/
-  copilot-instructions.md
-  workflows/ci.yml
-apps/
-  api/
-packages/
-  pv-twin/
-    src/pv_twin/
-tests/
-  unit/
-data/
-  panels/
-  tarifas/
-infra/
+.github/              Configuración de GitHub, CI y plantillas
+apps/                 API y dashboard de referencia
+packages/pv-twin/     Núcleo reutilizable del gemelo digital
+tests/                Pruebas unitarias e integraciones
+data/panels/          Catálogo de paneles solares
 ```
 
-## Desarrollo local
+## Inicio rápido
+
+### 1. Crear entorno virtual
 
 ```bash
 python -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
 pip install -e ".[dev]"
-pytest
-ruff check .
-mypy packages/pv-twin/src/pv_twin apps
 ```
 
-En Windows PowerShell:
+### 2. Ejecutar pruebas
 
-```powershell
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-python -m pip install --upgrade pip
-pip install -e ".[dev]"
+```bash
 pytest
 ```
 
-## API local
+### 3. Levantar la API local
 
 ```bash
 uvicorn apps.api.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
-Endpoints iniciales:
+### 4. Levantar el dashboard
 
-```text
-GET /health
-GET /api/v1/twin/panels
-GET /api/v1/twin/panels/{panel_id}
-POST /api/v1/twin/cell-temperature
-POST /api/v1/twin/cell-temperature/faiman
-GET /api/v1/twin/panels/{panel_id}/iv
-GET /api/v1/twin/panels/{panel_id}/pv
+```bash
+streamlit run apps/dashboard/main.py
 ```
 
-Ejemplo de calculo fisico:
+## Ejemplos de uso
+
+### Temperatura de celda
 
 ```bash
 curl -X POST http://127.0.0.1:8000/api/v1/twin/cell-temperature \
@@ -88,39 +80,29 @@ curl -X POST http://127.0.0.1:8000/api/v1/twin/cell-temperature \
   -d '{"g_poa_w_m2":1000.0,"t_amb_c":25.0,"noct_c":45.0}'
 ```
 
-Ejemplo Faiman con viento:
-
-```bash
-curl -X POST http://127.0.0.1:8000/api/v1/twin/cell-temperature/faiman \
-  -H "Content-Type: application/json" \
-  -d '{"g_poa_w_m2":900.0,"t_amb_c":28.0,"wind_speed_m_s":2.0}'
-```
-
-Ejemplo de curva I-V:
+### Curva I-V de un panel
 
 ```bash
 curl "http://127.0.0.1:8000/api/v1/twin/panels/generic_poly_330/iv?g_poa_w_m2=1000&t_cell_c=25&n_points=50"
 ```
 
-## GitHub Copilot CLI
+## Ruta de desarrollo
 
-Desde la raiz del repo:
+La hoja de ruta del proyecto prioriza:
 
-```bash
-copilot
-```
+1. consolidación del núcleo físico
+2. validación de modelos con criterios de ingeniería
+3. mejora de UX y análisis del dashboard
+4. escalabilidad hacia datos históricos, escenarios y decisiones operativas
 
-Tarea puntual:
+## Contribuir
 
-```bash
-copilot -p "Revisa la estructura y propone el siguiente modulo para Sprint 1"
-```
+Las contribuciones son bienvenidas. Revisa [CONTRIBUTING.md](CONTRIBUTING.md) para conocer el flujo recomendado de desarrollo, ramas y revisión de cambios.
 
-Tambien puedes usar GitHub CLI si lo tienes habilitado:
+## Seguridad
 
-```bash
-gh copilot
-gh copilot -p "Resume el proyecto y crea un plan corto de commits"
-```
+Si descubres una vulnerabilidad, consulta [SECURITY.md](SECURITY.md).
 
-Copilot debe tomar como contexto principal `.github/copilot-instructions.md`.
+## Licencia
+
+Este proyecto está bajo la licencia MIT. Consulta [LICENSE](LICENSE).

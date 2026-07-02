@@ -1,0 +1,23 @@
+name: Solicitud de mejora
+about: Propón una mejora o una nueva funcionalidad
+title: '[Feature] '
+labels: ['enhancement']
+body:
+  - type: markdown
+    attributes:
+      value: Gracias por proponer una mejora.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problema o necesidad
+      description: ¿Qué capacidad falta y por qué importa?
+      placeholder: Describe la necesidad.
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Propuesta de solución
+      placeholder: Describe cómo podría implementarse.
+    validations:
+      required: true
