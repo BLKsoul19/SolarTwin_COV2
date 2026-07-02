@@ -95,6 +95,16 @@ La hoja de ruta del proyecto prioriza:
 3. mejora de UX y análisis del dashboard
 4. escalabilidad hacia datos históricos, escenarios y decisiones operativas
 
+## Flujo de trabajo GitHub
+
+Este proyecto utiliza un flujo de trabajo estructurado con ramas `main`, `develop`, `feature/*`, `fix/*`, `docs/*` y `hotfix/*`.
+
+- Cada cambio significativo se revisa mediante PR.
+- La CI valida pruebas, lint y tipo en cada PR.
+- Las releases se publican automáticamente cuando se crea un tag `v*`.
+
+Lee `docs/GITHUB_WORKFLOW.md` para los detalles del modelo de ramas, PRs y releases.
+
 ## Contribuir
 
 Las contribuciones son bienvenidas. Revisa [CONTRIBUTING.md](CONTRIBUTING.md) para conocer el flujo recomendado de desarrollo, ramas y revisión de cambios.
